@@ -10,6 +10,10 @@
     "OAuth 2.0"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/firstline-idp/firstline-react.git"
+  },
   "main": "dist/firstline-react.cjs.js",
   "types": "dist/index.d.ts",
   "module": "dist/firstline-react.esm.js",
