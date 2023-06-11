@@ -10,33 +10,31 @@ const notWrapped = (): never => {
 };
 
 export interface IFirstlineContext {
-  loginRedirect: (options?: any) => Promise<void>;
-  verifyRedirect: (options?: any) => Promise<void>;
-  exchangeAuthorizationCode: (
-    authorizationCode: string,
-    code_verifier: string,
-    state: string
-  ) => Promise<any>;
-  exchangeRefreshToken: (refreshToken: string) => Promise<any>;
+  getTokens: () => Promise<ExchangeCodeResponse>;
+  getAccessToken: () => Promise<string>;
+  loginWithRedirect: (options?: any) => Promise<void>;
+  verifyEmail: (options?: any) => Promise<void>;
   logout: () => Promise<any>;
-  doExchangeCode: () => Promise<ExchangeCodeResponse>;
   doRefresh: () => Promise<ExchangeCodeResponse>;
-  doExchangeOrRefresh: () => Promise<ExchangeCodeResponse>;
-  getUser: (tokens: ExchangeCodeResponse) => any;
-  isEmailVerified: (tokens: ExchangeCodeResponse) => boolean;
+
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: any;
+  isEmailVerified: boolean;
 }
 
 const initialFirstlineContext: IFirstlineContext = {
-  loginRedirect: notWrapped,
-  verifyRedirect: notWrapped,
-  exchangeAuthorizationCode: notWrapped,
-  exchangeRefreshToken: notWrapped,
+  getTokens: notWrapped,
+  getAccessToken: notWrapped,
+  loginWithRedirect: notWrapped,
+  verifyEmail: notWrapped,
   logout: notWrapped,
-  doExchangeCode: notWrapped,
   doRefresh: notWrapped,
-  doExchangeOrRefresh: notWrapped,
-  getUser: notWrapped,
-  isEmailVerified: notWrapped,
+
+  isAuthenticated: false,
+  isLoading: true,
+  user: undefined,
+  isEmailVerified: false,
 };
 
 export const FirstlineContext = React.createContext<IFirstlineContext>(
@@ -55,12 +53,18 @@ export const FirstlineProvider = (
     () => new FirstlineClient(options.clientOptions)
   );
 
-  const loginRedirect = React.useCallback(
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [tokens, setTokens] = React.useState<ExchangeCodeResponse>(undefined);
+  const [user, setUser] = React.useState<any>(undefined);
+  const [isEmailVerified_, setIsEmailVerified_] =
+    React.useState<boolean>(undefined);
+
+  const loginWithRedirect = React.useCallback(
     (options?: any): Promise<void> => client.loginRedirect(),
     [client]
   );
 
-  const verifyRedirect = React.useCallback(
+  const verifyEmail = React.useCallback(
     (options?: any): Promise<void> => client.verifyRedirect(),
     [client]
   );
@@ -75,29 +79,13 @@ export const FirstlineProvider = (
     [client]
   );
 
-  const exchangeRefreshToken = React.useCallback(
-    (authorizationCode: string): Promise<ExchangeCodeResponse> =>
-      client.exchangeRefreshToken(authorizationCode),
-    [client]
-  );
-
   const logout = React.useCallback(
     (): Promise<void> => client.logout(),
     [client]
   );
 
-  const doExchangeCode = React.useCallback(
-    (): Promise<ExchangeCodeResponse> => client.doExchangeCode(),
-    [client]
-  );
-
   const doRefresh = React.useCallback(
     (): Promise<ExchangeCodeResponse> => client.doRefresh(),
-    [client]
-  );
-
-  const doExchangeOrRefresh = React.useCallback(
-    (): Promise<ExchangeCodeResponse> => client.doExchangeOrRefresh(),
     [client]
   );
 
@@ -112,29 +100,78 @@ export const FirstlineProvider = (
     [client]
   );
 
+  const doExchangeOrRefresh = React.useCallback(
+    async (initial = false): Promise<ExchangeCodeResponse> => {
+      if (!loading || initial) {
+        setLoading(true);
+        const tokens = await client.doExchangeOrRefresh();
+        setTokens(tokens);
+
+        return tokens;
+      }
+    },
+    [tokens, client, loading, setLoading, setTokens]
+  );
+
+  const getTokens =
+    React.useCallback(async (): Promise<ExchangeCodeResponse> => {
+      return tokens ?? (await doExchangeOrRefresh());
+    }, [tokens, doExchangeOrRefresh]);
+
+  const getAccessToken = React.useCallback(async (): Promise<string> => {
+    if (tokens) return tokens.access_token;
+    else {
+      const tokens = await doExchangeOrRefresh();
+      return tokens?.access_token;
+    }
+  }, [tokens, doExchangeOrRefresh]);
+
+  React.useEffect(() => {
+    doExchangeOrRefresh(true).catch((e) => {});
+  }, []);
+
+  React.useEffect(() => {
+    if (tokens === undefined) return;
+
+    if (tokens?.id_token) {
+      const userObject = getUser(tokens);
+      setUser(userObject);
+
+      const isEmailVerified_ = isEmailVerified(tokens);
+      setIsEmailVerified_(isEmailVerified_);
+
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [tokens]);
+
   const firstlineContextValues = React.useMemo(() => {
     return {
-      loginRedirect: loginRedirect,
-      exchangeAuthorizationCode: exchangeAuthorizationCode,
-      exchangeRefreshToken: exchangeRefreshToken,
-      verifyRedirect: verifyRedirect,
+      getTokens: getTokens,
+      getAccessToken: getAccessToken,
+      loginWithRedirect: loginWithRedirect,
+      verifyEmail: verifyEmail,
       logout: logout,
-      doExchangeCode: doExchangeCode,
       doRefresh: doRefresh,
-      doExchangeOrRefresh: doExchangeOrRefresh,
-      getUser: getUser,
-      isEmailVerified: isEmailVerified,
+
+      isAuthenticated: tokens ? true : false,
+      isLoading: loading,
+      user: user,
+      isEmailVerified: isEmailVerified_,
     };
   }, [
-    loginRedirect,
+    getTokens,
+    getAccessToken,
+    loginWithRedirect,
     exchangeAuthorizationCode,
-    exchangeRefreshToken,
-    verifyRedirect,
+    verifyEmail,
     logout,
-    doExchangeCode,
     doRefresh,
-    doExchangeOrRefresh,
-    isEmailVerified,
+    tokens,
+    loading,
+    user,
+    isEmailVerified_,
   ]);
 
   return (
