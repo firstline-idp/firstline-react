@@ -8,6 +8,7 @@ export interface ReactAuthenticationContext {
   loginWithRedirect: () => Promise<void>;
   verifyEmail: () => Promise<void>;
   logout: () => Promise<void>;
+  doRefresh: () => Promise<ExchangeCodeResponse>;
 
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -23,6 +24,7 @@ export const ReactAuthenticationProvider = ({ children }) => {
     verifyRedirect,
     doExchangeOrRefresh,
     logout,
+    doRefresh,
     getUser,
     isEmailVerified,
   } = useFirstline();
@@ -87,6 +89,7 @@ export const ReactAuthenticationProvider = ({ children }) => {
         loginWithRedirect: loginRedirect,
         verifyEmail: verifyEmail,
         logout: logout,
+        doRefresh: doRefresh,
 
         isAuthenticated: tokens ? true : false,
         isLoading: loading,
