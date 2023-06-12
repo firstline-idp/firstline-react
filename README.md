@@ -16,11 +16,9 @@
         logout_uri: window.location.origin,
     }}
 >
-     <ReactAuthenticationProvider>
-        <AuthorizationProvider>
-            <YOUR_PROVIDERS/>
-        </AuthorizationProvider>
-    </ReactAuthenticationProvider>
+  <AuthorizationProvider>
+      <YOUR_PROVIDERS/>
+  </AuthorizationProvider>
 </FirstlineProvider>
 ```
 
@@ -30,7 +28,7 @@ Adjust the file below to your use-case.
 
 ```jsx
 // AuthorizationContext.jsx
-import { useAuthentication } from "@first-line/firstline-react";
+import { useFirstline } from "@first-line/firstline-react";
 import { createContext } from "react";
 
 const AuthorizationContext = createContext();
@@ -58,7 +56,7 @@ export const AuthorizationProvider = ({ children }) => {
     verifyEmail,
     user,
     doRefresh,
-  } = useAuthentication();
+  } = useFirstline();
 
   if (isLoading) {
     return <Loading />;
@@ -85,17 +83,17 @@ export const AuthorizationProvider = ({ children }) => {
 #### Getting the Access-Token
 
 ```jsx
-import { useAuthentication } from "@first-line/firstline-react";
+import { useFirstline } from "@first-line/firstline-react";
 
-const { getAccessToken } = useAuthentication(); // call await getAccessToken() where needed
+const { getAccessToken } = useFirstline(); // call await getAccessToken() where needed
 ```
 
 #### Getting the current User
 
 ```jsx
-import { useAuthentication } from "@first-line/firstline-react";
+import { useFirstline } from "@first-line/firstline-react";
 
-const { user } = useAuthentication();
+const { user } = useFirstline();
 
 console.log(user.username, user.email, user.roles);
 ```
