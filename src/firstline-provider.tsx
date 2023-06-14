@@ -155,7 +155,7 @@ export const FirstlineProvider = (
       logout: logout,
       doRefresh: doRefresh,
 
-      isAuthenticated: tokens ? true : false,
+      isAuthenticated: user ? true : false,
       isLoading: loading,
       user: user,
       isEmailVerified: isEmailVerified_,
