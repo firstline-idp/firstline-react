@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
-    "@first-line/firstline-spa-js": "^1.0.1",
+    "@first-line/firstline-spa-js": "^1.0.4",
     "crypto-js": "^4.1.1"
   },
   "devDependencies": {
