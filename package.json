@@ -1,6 +1,6 @@
 {
   "name": "@first-line/firstline-react",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "React Library for Firstline IDP",
   "author": "Firstline",
   "keywords": [
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
-    "@first-line/firstline-spa-js": "^1.0.1",
+    "@first-line/firstline-spa-js": "^1.0.4",
     "crypto-js": "^4.1.1"
   },
   "devDependencies": {

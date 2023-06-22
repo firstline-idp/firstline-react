@@ -3,7 +3,16 @@ import {
   FirstlineClient,
   FirstlineClientOptions,
   ExchangeCodeResponse,
+  LoginRedirectOptions,
 } from "@first-line/firstline-spa-js";
+
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 const notWrapped = (): never => {
   throw new Error("You need to wrap your components with <FirstlineProvider>");
@@ -12,8 +21,8 @@ const notWrapped = (): never => {
 export interface IFirstlineContext {
   getTokens: () => Promise<ExchangeCodeResponse>;
   getAccessToken: () => Promise<string>;
-  loginWithRedirect: (options?: any) => Promise<void>;
-  verifyEmail: (options?: any) => Promise<void>;
+  loginWithRedirect: (options?: LoginWithRedirectOptions) => Promise<void>;
+  verifyEmail: () => Promise<void>;
   logout: () => Promise<any>;
   doRefresh: () => Promise<ExchangeCodeResponse>;
 
@@ -22,6 +31,8 @@ export interface IFirstlineContext {
   user: any;
   isEmailVerified: boolean;
 }
+
+export interface LoginWithRedirectOptions extends LoginRedirectOptions {}
 
 const initialFirstlineContext: IFirstlineContext = {
   getTokens: notWrapped,
@@ -60,12 +71,13 @@ export const FirstlineProvider = (
     React.useState<boolean>(undefined);
 
   const loginWithRedirect = React.useCallback(
-    (options?: any): Promise<void> => client.loginRedirect(),
+    (options?: LoginWithRedirectOptions): Promise<void> =>
+      client.loginRedirect(options),
     [client]
   );
 
   const verifyEmail = React.useCallback(
-    (options?: any): Promise<void> => client.verifyRedirect(),
+    (): Promise<void> => client.verifyRedirect(),
     [client]
   );
 
@@ -118,13 +130,21 @@ export const FirstlineProvider = (
       return tokens ?? (await doExchangeOrRefresh());
     }, [tokens, doExchangeOrRefresh]);
 
-  const getAccessToken = React.useCallback(async (): Promise<string> => {
-    if (tokens) return tokens.access_token;
-    else {
-      const tokens = await doExchangeOrRefresh();
-      return tokens?.access_token;
-    }
-  }, [tokens, doExchangeOrRefresh]);
+  const getAccessToken = React.useCallback(
+    async (check_expiry: boolean = true): Promise<string> => {
+      if (tokens?.access_token && check_expiry) {
+        const decodedJwt = parseJwt(tokens.access_token);
+        if (decodedJwt.exp * 1000 >= Date.now()) return tokens.access_token;
+      }
+
+      if (tokens) return tokens.access_token;
+      else {
+        const tokens = await doExchangeOrRefresh(); // TODO: add option to prevent redirect and instead throw error which can be handled
+        return tokens?.access_token;
+      }
+    },
+    [tokens, doExchangeOrRefresh]
+  );
 
   React.useEffect(() => {
     doExchangeOrRefresh(true).catch((e) => {});
