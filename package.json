@@ -1,6 +1,6 @@
 {
   "name": "@first-line/firstline-react",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "React Library for Firstline IDP",
   "author": "Firstline",
   "keywords": [
@@ -56,6 +56,10 @@
     "ts-jest": "^29.0.3",
     "tslib": "^2.5.0",
     "typescript": "^4.9.4"
+  },
+  "peerDependencies": {
+    "react": "^16.11.0 || ^17 || ^18",
+    "react-dom": "^16.11.0 || ^17 || ^18"
   },
   "jest": {
     "moduleFileExtensions": [
