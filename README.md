@@ -5,14 +5,15 @@ This library enables you to add authentication to your React app.
 ## Helpful resources
 
 - [Quick setup](https://docs.firstline.sh/quicksetup) - our guide for quickly adding login, logout and user information to a React app using Firstline.
-- [React sample app](https://github.com/firstline-idp/firstline-react) - a full-fledged React application integrated with Firstline.
+- [React sample app](https://github.com/firstline-idp/sample-firstline-react) - a full-fledged React application integrated with Firstline.
 - [Firstline docs](https://docs.firstline.sh) - explore our docs site and learn more about Firstline.
 
 ## Getting started
 
 ### 1. Setup Firstline Application & API
+
 1. Follow the [Quick setup](https://docs.firstline.sh/quicksetup) to configure a Firstline Application.
-2. Add a Firstline API as shown in [Secure API](https://docs.firstline.sh/secure-api).
+2. Add a Firstline API as shown in [Secure API](https://docs.firstline.sh/secureapi).
 
 **Important:** Don't forget to configure the Application URIs.
 

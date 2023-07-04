@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "lib": ["es6", "dom"],
-    "jsx": "react-jsx",
+    "jsx": "react",
     "noImplicitAny": false,
     "outDir": "./dist",
     "rootDir": "./src",
