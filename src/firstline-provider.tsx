@@ -25,6 +25,7 @@ export interface IFirstlineContext {
   verifyEmail: () => Promise<void>;
   logout: () => Promise<any>;
   doRefresh: () => Promise<ExchangeCodeResponse>;
+  doExchangeOrRefresh: () => Promise<ExchangeCodeResponse>;
 
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -41,6 +42,7 @@ const initialFirstlineContext: IFirstlineContext = {
   verifyEmail: notWrapped,
   logout: notWrapped,
   doRefresh: notWrapped,
+  doExchangeOrRefresh: notWrapped,
 
   isAuthenticated: false,
   isLoading: true,
@@ -174,6 +176,7 @@ export const FirstlineProvider = (
       verifyEmail: verifyEmail,
       logout: logout,
       doRefresh: doRefresh,
+      doExchangeOrRefresh: doExchangeOrRefresh,
 
       isAuthenticated: user ? true : false,
       isLoading: loading,
@@ -188,6 +191,7 @@ export const FirstlineProvider = (
     verifyEmail,
     logout,
     doRefresh,
+    doExchangeOrRefresh,
     tokens,
     loading,
     user,
