@@ -174,6 +174,7 @@ export const FirstlineProvider = (
       verifyEmail: verifyEmail,
       logout: logout,
       doRefresh: doRefresh,
+      doExchangeOrRefresh: doExchangeOrRefresh,
 
       isAuthenticated: user ? true : false,
       isLoading: loading,
@@ -188,6 +189,7 @@ export const FirstlineProvider = (
     verifyEmail,
     logout,
     doRefresh,
+    doExchangeOrRefresh,
     tokens,
     loading,
     user,
